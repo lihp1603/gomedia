@@ -1,4 +1,4 @@
-module github.com/lihp1603/gomedia
+module github.com/yapingcat/gomedia
 
 go 1.16
 

@@ -297,7 +297,7 @@ func (sh *System_header) Decode(bs *codec.BitStream) error {
 	bs.SkipBits(7)
 	sh.Streams = sh.Streams[:0]
 	least := sh.Header_length - 6
-	for least > 0 && bs.NextBits(1) == 0x01 {
+	for least >= 3 && bs.NextBits(1) == 0x01 {
 		es := new(Elementary_Stream)
 		es.Stream_id = bs.Uint8(8)
 		bs.SkipBits(2)
@@ -306,8 +306,10 @@ func (sh *System_header) Decode(bs *codec.BitStream) error {
 		sh.Streams = append(sh.Streams, es)
 		least -= 3
 	}
+	//提高兼容性，这个地方选择跳过一些bits
 	if least > 0 {
-		return errParser
+		bs.SkipBits(8 * int(least))
+		//return errParser
 	}
 	return nil
 }
