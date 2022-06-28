@@ -3,7 +3,7 @@
  
 ## Installation
 ```
-go get github.com/yapingcat/gomedia
+go get github.com/lihp1603/gomedia
 ```
  
 ## H264/H265/AAC/VP8/OPUS
