@@ -440,8 +440,12 @@ func (psm *Program_stream_map) Decode(bs *codec.BitStream) error {
 	}
 	bs.SkipBits(int(psm.Program_stream_info_length) * 8)
 	psm.Elementary_stream_map_length = bs.Uint16(16)
+	//下面这段代码其实是没有问题，是严格按照协议来写的，但是会出现一些不标准的流没办法兼容，所以改成兼容而是更宽泛的方式
 	if psm.Program_stream_map_length != 6+psm.Program_stream_info_length+psm.Elementary_stream_map_length+4 {
-		return errParser
+		//如果对方的Elementary_stream_map_length长度打的有问题，那么这个时候，我们选择充分相信Program_stream_map_length字段
+		//参考ffmpeg的代码，兼容性更强
+		psm.Elementary_stream_map_length = psm.Program_stream_map_length - psm.Program_stream_info_length - 10
+		// return errParser
 	}
 	if bs.RemainBytes() < int(psm.Elementary_stream_map_length)+4 {
 		bs.UnRead(12*8 + int(psm.Program_stream_info_length)*8)
